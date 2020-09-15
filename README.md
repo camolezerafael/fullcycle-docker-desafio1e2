@@ -2,7 +2,7 @@
 
 #### Autor: [Rafael Camoleze](mailto:contato@rafaelcamoleze.com)
 
-#### Link do container com desafio 2 Code Educarion: [Docker Hub](https://hub.docker.com/r/camolezerafael/codeeducation)
+#### Link do container com desafio 2 Code Education: [Docker Hub](https://hub.docker.com/r/camolezerafael/codeeducation)
 
 #
 #

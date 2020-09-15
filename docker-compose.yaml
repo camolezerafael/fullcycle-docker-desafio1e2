@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+    app_exercicio:
+        build: .
+        container_name: app_exercicio
+        entrypoint: dockerize -wait tcp://db:3306 -timeout 60s php-fpm
+        volumes:
+            - .:/var/www
+        networks:
+            - exercicio-network
+        depends_on:
+            - db
+            - redis
+
+    db:
+        build: .docker/mysql
+        image: mysql:5.7
+        command: --innodb-use-native-aio=0
+        container_name: banco
+        restart: always
+        tty: true
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./.docker/dbdata:/var/lib/mysql
+        environment:
+            - MYSQL_DATABASE=exercicio
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=root
+        networks:
+            - exercicio-network
+
+    nginx:
+        entrypoint: dockerize -template /var/www/.docker/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf nginx -g "daemon off;"
+        environment:
+            - MY_NGINX_HOST=app_exercicio
+            - MY_NGINX_PORT=9000
+            - MY_NGINX_PORT_LISTEN=80
+        build: .docker/nginx
+        container_name: nginx
+        restart: always
+        tty: true
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www
+        networks:
+            - exercicio-network
+        depends_on:
+            - app_exercicio
+
+    redis:
+        image: redis:alpine
+        expose:
+            - 6379
+        networks:
+            - exercicio-network
+
+
+
+networks:
+    exercicio-network:
+        driver: bridge
+
